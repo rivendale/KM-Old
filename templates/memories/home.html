@@ -1,0 +1,125 @@
+{% extends "memories/base.html"%} {% block navbar %}
+<div class="row h-100">
+  <div
+    class="
+      global-container
+      container
+      col-sm-8 col-md-6 col-lg-5
+      mx-auto
+      my-auto
+    "
+  >
+    <div class="card card-body bg-light">
+      <h3 class="text-center">Welcome<!--, {{request.user.username}}--></h3>
+      <hr />
+
+      <form
+        action="{% url 'upload' %}"
+        method="POST"
+        class="m-3"
+        id="form"
+        enctype="multipart/form-data"
+      >
+        {% csrf_token %}
+        <label for="id_memory">Memory:</label>
+        <textarea
+          name="memory"
+          required
+          maxlength="1500"
+          class="form-control mb-2"
+          id="id_memory"
+        ></textarea>
+        <label for="id_category">Category:</label>
+        <input
+          type="text"
+          class="form-control mb-2"
+          name="category"
+          maxlength="15"
+          required
+          id="id_category"
+        />
+        <label for="id_date">Date:</label>
+        <input
+          type="date"
+          name="date"
+          class="form-control mb-2"
+          required
+          id="id_date"
+        />
+        <div class="custom-control custom-switch">
+          <input
+            type="checkbox"
+            class="custom-control-input"
+            name="dev"
+            id="customSwitch1"
+          />
+          <label class="custom-control-label" for="customSwitch1"
+            >Private Memory</label
+          >
+        </div>
+        <div class="dropzone" name="files" id="myDropzone"></div>
+        <div class="text-center">
+          <button
+            class="btn btn-primary mt-3 text-center"
+            id="submit"
+            type="submit"
+          >
+            Post Your memorie
+          </button>
+        </div>
+
+        <script type="text/javascript">
+          const csrftoken = document.querySelector(
+            "[name=csrfmiddlewaretoken]"
+          ).value;
+          Dropzone.options.myDropzone = {
+            url: "{% url 'upload' %}",
+            headers: { "X-CSRFToken": csrftoken },
+            method: "post",
+            autoProcessQueue: false,
+            uploadMultiple: true,
+            parallelUploads: 5,
+            maxFiles: 5,
+            maxFilesize: 1000,
+            acceptedFiles: "image/*, video/*",
+            addRemoveLinks: true,
+            init: function () {
+              var submitButton = document.querySelector("#form");
+              var wrapperThis = this;
+
+              submitButton.addEventListener("submit", function (e) {
+                var count = wrapperThis.files.length;
+                if (count != 0) {
+                  event.preventDefault();
+                  form = document.querySelector("#form");
+                  Array.from(form.elements).forEach(
+                    (formElement) => (formElement.disabled = true)
+                  );
+                  wrapperThis.processQueue();
+                }
+              });
+
+              this.on("sendingmultiple", function (data, xhr, formData) {
+                formData.append("memory", $("#id_memory").val());
+                formData.append("category", $("#id_category").val());
+                formData.append("date", $("#id_date").val());
+                formData.append("dev", $("#dev").val());
+              });
+              this.on("complete", function (file) {
+                if (
+                  this.getUploadingFiles().length === 0 &&
+                  this.getQueuedFiles().length === 0
+                ) {
+                  window.location.href = "/explore";
+                  console.log(count);
+                }
+              });
+            },
+          };
+        </script>
+
+        {% endblock %}
+      </form>
+    </div>
+  </div>
+</div>
