@@ -4,7 +4,7 @@ django>=3.2.5
 django-cors-headers==3.7.0
 django-utils-six==2.0
 gitdb==4.0.7
-GitPython==3.1.17
+GitPython==3.1.37
 gunicorn==20.1.0
 psycopg2==2.8.6
 pytz==2021.1
